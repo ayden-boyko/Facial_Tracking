@@ -30,7 +30,7 @@ source = cv2.VideoCapture(s)
 win_name = 'Camera Preview'
 cv2.namedWindow(win_name, cv2.WINDOW_NORMAL)
 
-print(f'\n {os.getcwd()} \n')
+#print(f'\n {os.getcwd()} \n')
 
 # load object detection dnn from pre-trained model
 net = cv2.dnn.readNetFromCaffe(
