@@ -11,7 +11,7 @@ parser = argparse.ArgumentParser(
 parser.add_argument('--input', help='Path to image or video. Skip to capture frames from camera')
 parser.add_argument('--proto', help='Path to .prototxt')
 parser.add_argument('--model', help='Path to .caffemodel')
-parser.add_argument('--dataset', default="HAND", help='Specify what kind of model was trained. '
+parser.add_argument('--dataset', default='COCO', help='Specify what kind of model was trained. '
                                       'It could be (COCO, MPI, HAND) depends on dataset.')
 parser.add_argument('--thr', default=0.1, type=float, help='Threshold value for pose parts heat map')
 parser.add_argument('--width', default=368, type=int, help='Resize input to specific width.')
@@ -77,12 +77,16 @@ while cv.waitKey(1) < 0:
         cv.waitKey()
         break
 
+    timer = cv.getTickCount()
+
     frameWidth = frame.shape[1]
     frameHeight = frame.shape[0]
     inp = cv.dnn.blobFromImage(frame, inScale, (inWidth, inHeight),
                               (0, 0, 0), swapRB=False, crop=False)
     net.setInput(inp)
     out = net.forward()
+
+    fps = cv.getTickFrequency() / (cv.getTickCount() - timer)
 
     assert(len(BODY_PARTS) <= out.shape[1])
 
@@ -118,5 +122,6 @@ while cv.waitKey(1) < 0:
     t, _ = net.getPerfProfile()
     freq = cv.getTickFrequency() / 1000
     cv.putText(frame, '%.2fms' % (t / freq), (10, 20), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0))
+    cv.putText(frame, 'fps: %.2f' % fps, (10,35) ,cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0))
 
     cv.imshow('OpenPose using OpenCV', frame)
